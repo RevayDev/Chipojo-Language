@@ -19,6 +19,15 @@ void jumpBOM(void)
     }
 }
 
+TypeToken peek_next_token_type(void)
+{
+    int saved_pos = indx;
+    Token t = nextToken();
+    TypeToken type = t.type;
+    indx = saved_pos;
+    return type;
+}
+
 Token nextToken(){
     jumpBlankspace();
     Token t;
@@ -42,7 +51,6 @@ Token nextToken(){
             t.type = TOKEN_PRINT;
         }
         else{
-            printf("is id \n");
             t.type = TOKEN_ID;
         }
         return t;

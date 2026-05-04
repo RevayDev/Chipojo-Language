@@ -6,6 +6,7 @@
 void forward();
 void consume(TypeToken type, char *message);
 int expression();
+int arith_expr();
 int term();
 int factor();
 void assignation();
