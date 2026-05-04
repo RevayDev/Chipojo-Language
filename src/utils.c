@@ -1,0 +1,19 @@
+#include "utils.h"
+#include "stdio.h"
+
+void print_version()
+{
+    printf("\n");
+    printf("Lizard Language Interpreter\n");
+    printf("by Luife\n");
+    printf("Version 0.3.0\n");
+    printf("\n");
+    printf("\n");
+    printf(" _                            _\n");
+    printf("| | (_) _ _   _ _ _  _ _  _ _| |\n");
+    printf("| | | |/_  / /  _  || '_//  _  |\n");
+    printf("| |_| | / /_ | (_| || |  | (_| |\n");
+    printf("\\_ _|_|/_ _ |\\_ _ _||_|  \\_ _ _|\n");
+    printf("\n");
+    printf("2026 - Lizard Language\n");
+}

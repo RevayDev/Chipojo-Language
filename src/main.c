@@ -1,12 +1,19 @@
 #include "lizard.h"
 #include "lexer.h"
 #include "parser.h"
+#include "utils.h"
 
 extern char *input;
 extern int indx;
 
 int main(int argc, char **argv)
 {
+    if (argc == 2 && strcmp(argv[1], "-v") == 0)
+    {
+        print_version();
+        return 0;
+    }
+
     if (argc < 2)
     {
         printf("Use: %s archivo.lzd\n", argv[0]);
