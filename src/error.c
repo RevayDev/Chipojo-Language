@@ -82,7 +82,7 @@ void syntax_error(const char *message, Token token)
     }
     else if (token.type == TOKEN_NUM)
     {
-        printf(" (%d)", token.value);
+        printf(" (%g)", token.value);
     }
     else if (token.type == TOKEN_STRING)
     {

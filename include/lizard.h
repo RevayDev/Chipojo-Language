@@ -47,37 +47,17 @@ typedef enum
 typedef struct
 {
     TypeToken type;
-    int value;
+    double value;
     char name[64];
     int line;
 } Token;
 
 extern int g_line;
 
-// Variables
-typedef enum
-{
-    VAR_INT,
-    VAR_STRING,
-    VAR_BOOL
-} VarType;
 
-typedef struct
-{
-    char name[64];
-    VarType type;
-    union
-    {
-        int int_val;
-        char str_val[256];
-        
-    } value;
-} Var;
 
 extern char *input;
 extern int indx;
 extern Token current_token;
-extern Var vars_table[];
-extern int num_vars;
 
 #endif

@@ -78,13 +78,31 @@ Token nextToken()
     // Number
     if (isdigit((unsigned char)c))
     {
-        t.value = 0;
-        while (isdigit((unsigned char)currentChar()))
-        {
-            t.value = t.value * 10 + (currentChar() - '0');
+        double val = 0.0;
+        int decimal = 0;
+        double frac = 0.1; 
+
+        while (isdigit((unsigned char)currentChar()) || currentChar()=='.')
+        {   
+            if (currentChar() == '.'){
+            if (decimal) break;
+            decimal = 1;
             nextChar();
+            continue;
+        }
+        if (!decimal)
+        {
+            val = val * 10 + (currentChar() - '0');
+        }
+        else
+        {
+            val = val + (currentChar() - '0') * frac;
+            frac *= 0.1;
+        }
+        nextChar();
         }
         t.type = TOKEN_NUM;
+        t.value = val;
         return t;
     }
 

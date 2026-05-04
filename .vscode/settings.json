@@ -3,6 +3,8 @@
         "rc_versioninfo": "properties",
         "rc_runtime": "properties",
         "lexer.h": "c",
-        "variables.h": "c"
+        "variables.h": "c",
+        "type_traits": "c",
+        "typeinfo": "c"
     }
 }

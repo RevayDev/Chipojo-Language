@@ -18,14 +18,14 @@ void consume(TypeToken type, char *message)
 }
 
 // Prototypes
-int comparison_op(int left, TypeToken op, int right);
+double comparison_op(double left, TypeToken op, double right);
 void concat_element(char *buffer, size_t buffsize);
 void print_concat();
 
 void if_stmt()
 {
     consume(TOKEN_IF, "if error");
-    int cond = expression();
+    double cond = expression();
     consume(TOKEN_LEFTBRACE, "{ error");
 
     int executed = 0;
@@ -44,7 +44,7 @@ void if_stmt()
     while (current_token.type == TOKEN_ELIF)
     {
         forward();
-        int elif_cond = expression();
+        double elif_cond = expression();
         consume(TOKEN_LEFTBRACE, "{ error");
         if (!executed && elif_cond != 0)
         {
@@ -82,7 +82,7 @@ void while_stmt(void)
     {
         indx = after_cond;
         forward();
-        int cond = expression();
+        double cond = expression();
         consume(TOKEN_LEFTBRACE, "Error {");
         if (cond != 0)
         {
@@ -135,24 +135,24 @@ void block()
     consume(TOKEN_RIGHTBRACE, "error }");
 }
 
-int expression()
+double expression()
 {
-    int left = arith_expr();
+    double left = arith_expr();
     while (current_token.type == TOKEN_EQ || current_token.type == TOKEN_NE ||
            current_token.type == TOKEN_LT || current_token.type == TOKEN_GT ||
            current_token.type == TOKEN_LE || current_token.type == TOKEN_GE)
     {
         TypeToken op = current_token.type;
         forward();
-        int right = arith_expr();
+        double right = arith_expr();
         left = comparison_op(left, op, right);
     }
     return left;
 }
 
-int arith_expr()
+double arith_expr()
 {
-    int left = term();
+    double left = term();
     while (current_token.type == TOKEN_SUM || current_token.type == TOKEN_REST)
     {
         if (current_token.type == TOKEN_SUM)
@@ -169,7 +169,7 @@ int arith_expr()
     return left;
 }
 
-int comparison_op(int left, TypeToken op, int right)
+double comparison_op(double left, TypeToken op, double right)
 {
     switch (op)
     {
@@ -190,9 +190,9 @@ int comparison_op(int left, TypeToken op, int right)
     }
 }
 
-int term()
+double term()
 {
-    int left = factor();
+    double left = factor();
     while (current_token.type == TOKEN_MUL || current_token.type == TOKEN_DIV)
     {
         Token token = current_token;
@@ -205,7 +205,7 @@ int term()
         else
         {
             forward();
-            int divisor = factor();
+            double divisor = factor();
             if (divisor == 0)
             {
                 syntax_error("Division by zero", token);
@@ -217,7 +217,7 @@ int term()
     return left;
 }
 
-int factor()
+double factor()
 { // Operator Prefix ++ --
     if (current_token.type == TOKEN_INC || current_token.type == TOKEN_DEC)
     {
@@ -231,9 +231,9 @@ int factor()
 
         char name[64];
         strcpy(name, current_token.name);
-        int old = getIntVar(name);
-        int new_val = (op == TOKEN_INC) ? old + 1 : old - 1;
-        assignIntVar(name, new_val);
+        double old = getNumberVar(name);
+        double new_val = (op == TOKEN_INC) ? old + 1 : old - 1;
+        assignNumberVar(name, new_val);
         forward();
         return new_val;
     }
@@ -251,7 +251,7 @@ int factor()
     // Number
     else if (current_token.type == TOKEN_NUM)
     {
-        int val = current_token.value;
+        double val = current_token.value;
         forward();
         return val;
     }
@@ -264,18 +264,18 @@ int factor()
         {
             TypeToken op = current_token.type;
             forward();
-            int old = getIntVar(name);
-            int new_val = (op == TOKEN_INC) ? old + 1 : old - 1;
-            assignIntVar(name, new_val);
+            double old = getNumberVar(name);
+            double new_val = (op == TOKEN_INC) ? old + 1 : old - 1;
+            assignNumberVar(name, new_val);
             return old;
         }
 
-        return getIntVar(name);
+        return getNumberVar(name);
     }
     else if (current_token.type == TOKEN_PARENTLEFT)
     {
         forward();
-        int val = expression();
+        double val = expression();
         consume(TOKEN_PARENTRIGHT, "Falta ')'");
         return val;
     }
@@ -286,10 +286,10 @@ int factor()
     }
 }
 
-void assign_compound(char *name, TypeToken op, int val,int op_line)
+void assign_compound(char *name, TypeToken op, double val, int op_line)
 {
-    int current = getIntVar(name);
-    int result;
+    double current = getNumberVar(name);
+    double result;
     switch (op)
     {
     case TOKEN_PLUS_ASSIGN:
@@ -313,7 +313,7 @@ void assign_compound(char *name, TypeToken op, int val,int op_line)
     default:
         return;
     }
-    assignIntVar(name, result);
+    assignNumberVar(name, result);
 }
 
 void assignation()
@@ -332,9 +332,9 @@ void assignation()
         }
         strcpy(name, current_token.name);
         forward();
-        int old = getIntVar(name);
-        int new_val = (op == TOKEN_INC) ? old + 1 : old - 1;
-        assignIntVar(name, new_val);
+        double old = getNumberVar(name);
+        double new_val = (op == TOKEN_INC) ? old + 1 : old - 1;
+        assignNumberVar(name, new_val);
         return;
     }
 
@@ -346,9 +346,9 @@ void assignation()
         {
             TypeToken op = current_token.type;
             forward();
-            int old = getIntVar(name);
-            int new_val = (op == TOKEN_INC) ? old + 1 : old - 1;
-            assignIntVar(name, new_val);
+            double old = getNumberVar(name);
+            double new_val = (op == TOKEN_INC) ? old + 1 : old - 1;
+            assignNumberVar(name, new_val);
             return;
         }
     }
@@ -359,9 +359,9 @@ void assignation()
         current_token.type == TOKEN_MULT_ASSIGN)
     {
         TypeToken op = current_token.type;
-        int current_line = current_token.line;
+        double current_line = current_token.line;
         forward();
-        int val = expression();
+        double val = expression();
         assign_compound(name, op, val,current_line);
         return;
     }
@@ -375,8 +375,8 @@ void assignation()
     }
     else
     {
-        int val = expression();
-        assignIntVar(name, val);
+        double val = expression();
+        assignNumberVar(name, val);
     }
 }
 
@@ -396,8 +396,8 @@ void concat_element(char *buffer, size_t buffsize)
         TypeToken next = peek_next_token_type();
         if (next == TOKEN_INC || next == TOKEN_DEC)
         {
-            int val = factor();
-            snprintf(temp, sizeof(temp), "%d", val);
+            double val = factor();
+            snprintf(temp, sizeof(temp), "%g", val);
             strncat(buffer, temp, buffsize - strlen(buffer) - 1);
         }
         else
@@ -414,7 +414,7 @@ void concat_element(char *buffer, size_t buffsize)
                     }
                     else
                     {
-                        snprintf(temp, sizeof(temp), "%d", vars_table[i].value.int_val);
+                        snprintf(temp, sizeof(temp), "%g", vars_table[i].value.val);
                         strncat(buffer, temp, buffsize - strlen(buffer) - 1);
                     }
                     found = 1;
@@ -430,8 +430,8 @@ void concat_element(char *buffer, size_t buffsize)
     }
     else
     {
-        int val = factor();
-        snprintf(temp, sizeof(temp), "%d", val);
+        double val = factor();
+        snprintf(temp, sizeof(temp), "%g", val);
         strncat(buffer, temp, buffsize - strlen(buffer) - 1);
     }
 }

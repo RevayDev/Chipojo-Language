@@ -4,18 +4,18 @@
 Var vars_table[MAX_VARS];
 int num_vars = 0;
 
-void assignIntVar(char *name, int val)
+void assignNumberVar(char *name, double val)
 {
     for (int i = 0; i < num_vars; i++)
         if (strcmp(vars_table[i].name, name) == 0)
         {
-            vars_table[i].type = VAR_INT;
-            vars_table[i].value.int_val = val;
+            vars_table[i].type = VAR_NUMBER;
+            vars_table[i].value.val = val;
             return;
         }
     strcpy(vars_table[num_vars].name, name);
-    vars_table[num_vars].type = VAR_INT;
-    vars_table[num_vars].value.int_val = val;
+    vars_table[num_vars].type = VAR_NUMBER;
+    vars_table[num_vars].value.val = val;
     num_vars++;
 }
 
@@ -34,17 +34,17 @@ void assignStringVar(char *name, char *val)
     num_vars++;
 }
 
-int getIntVar(char *name)
+double getNumberVar(char *name)
 {
     for (int i = 0; i < num_vars; i++)
         if (strcmp(vars_table[i].name, name) == 0)
         {
-            if (vars_table[i].type != VAR_INT)
+            if (vars_table[i].type != VAR_NUMBER)
             {
                 printf("Error: variable '%s'  no integer \n", name);
                 exit(1);
             }
-            return vars_table[i].value.int_val;
+            return vars_table[i].value.val;
         }
     undefined_variable_error(name,current_token.line);
     exit(1);

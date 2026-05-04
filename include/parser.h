@@ -5,10 +5,10 @@
 
 void forward();
 void consume(TypeToken type, char *message);
-int expression();
-int arith_expr();
-int term();
-int factor();
+double expression();
+double arith_expr();
+double term();
+double factor();
 void assignation();
 void print_stmt();
 void if_stmt();
