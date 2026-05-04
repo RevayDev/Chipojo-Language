@@ -1,6 +1,7 @@
 #include "parser.h"
 #include "lexer.h"
 #include "variables.h"
+#include "error.h"
 
 Token current_token;
 
@@ -11,7 +12,7 @@ void consume(TypeToken type, char *message)
         forward();
     else
     {
-        printf("%s (wait %d, got %d)\n", message, type, current_token.type);
+        syntax_error("",current_token);   
         exit(1);
     }
 }
@@ -194,6 +195,8 @@ int term()
     int left = factor();
     while (current_token.type == TOKEN_MUL || current_token.type == TOKEN_DIV)
     {
+        Token token = current_token;
+
         if (current_token.type == TOKEN_MUL)
         {
             forward();
@@ -205,7 +208,7 @@ int term()
             int divisor = factor();
             if (divisor == 0)
             {
-                printf("Error: division by Zero\n");
+                syntax_error("Division by zero", token);
                 exit(1);
             }
             left /= divisor;
@@ -222,7 +225,7 @@ int factor()
         forward();
         if (current_token.type != TOKEN_ID)
         {
-            printf("Error, se esperaba indetificador ++ o --\n");
+            syntax_error("Syntax Error", current_token);
             exit(1);
         }
 
@@ -268,12 +271,12 @@ int factor()
     }
     else
     {
-        printf("Error in factor syntax: token type %d\n", current_token.type);
+        syntax_error("Syntax Error", current_token);
         exit(1);
     }
 }
 
-void assign_compound(char *name, TypeToken op, int val)
+void assign_compound(char *name, TypeToken op, int val,int op_line)
 {
     int current = getIntVar(name);
     int result;
@@ -291,8 +294,8 @@ void assign_compound(char *name, TypeToken op, int val)
     case TOKEN_DIV_ASSIGN:
         if (val == 0)
         {
-            printf("Error: división por cero en asignación compuesta\n");
-            exit(1);
+            printf("Error in line %d:Division by zero",op_line);
+                exit(1);
         }
         result = current / val;
         break;
@@ -346,9 +349,10 @@ void assignation()
         current_token.type == TOKEN_MULT_ASSIGN)
     {
         TypeToken op = current_token.type;
+        int current_line = current_token.line;
         forward();
         int val = expression();
-        assign_compound(name, op, val);
+        assign_compound(name, op, val,current_line);
         return;
     }
 
@@ -409,7 +413,7 @@ void concat_element(char *buffer, size_t buffsize)
             }
             if (!found)
             {
-                printf("Error: variable '%s' no definida\n", var_name);
+                undefined_variable_error(var_name,current_token.line);
                 exit(1);
             }
         }

@@ -1,8 +1,14 @@
 #include "lexer.h"
 char *input = NULL;
 int indx = 0;
+int g_line = 1;
 
-void nextChar(void) { indx++; }
+void nextChar(void) {
+    if (input[indx] == '\n'){
+        g_line++;
+    }
+    indx++;
+}
 char currentChar(void) { return input[indx]; }
 static char peekChar(void) { return input[indx + 1]; }
 
@@ -33,6 +39,7 @@ Token nextToken()
 {
     jumpBlankspace();
     Token t;
+    t.line = g_line;
     char c = currentChar();
     if (c == '\0')
     {

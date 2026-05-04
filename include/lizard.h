@@ -47,7 +47,10 @@ typedef struct
     TypeToken type;
     int value;
     char name[64];
+    int line;
 } Token;
+
+extern int g_line;
 
 // Variables
 typedef enum

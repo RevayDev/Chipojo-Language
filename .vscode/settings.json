@@ -2,6 +2,7 @@
     "files.associations": {
         "rc_versioninfo": "properties",
         "rc_runtime": "properties",
-        "lexer.h": "c"
+        "lexer.h": "c",
+        "variables.h": "c"
     }
 }

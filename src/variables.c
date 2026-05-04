@@ -41,12 +41,12 @@ int getIntVar(char *name)
         {
             if (vars_table[i].type != VAR_INT)
             {
-                printf("Error: variable '%s' no es entera\n", name);
+                printf("Error: variable '%s'  no integer \n", name);
                 exit(1);
             }
             return vars_table[i].value.int_val;
         }
-    printf("Error: variable '%s' no definida\n", name);
+    undefined_variable_error(name,current_token.line);
     exit(1);
 }
 
@@ -57,11 +57,11 @@ char *getStringVar(char *name)
         {
             if (vars_table[i].type != VAR_STRING)
             {
-                printf("Error: variable '%s' no es string\n", name);
+                printf("Error: variable '%s' no string\n", name);
                 exit(1);
             }
             return vars_table[i].value.str_val;
         }
-    printf("Error: variable '%s' no definida\n", name);
+    undefined_variable_error(name,current_token.line);
     exit(1);
 }
