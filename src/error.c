@@ -73,7 +73,12 @@ const char *token_to_string(TypeToken type)
     }
 }
 
-void syntax_error(const char *message, Token token)
+void syntax_error_line(const char *message, int line){
+    printf("Lizard Error in line %d : %s \n", line, message);
+    exit(1);
+}
+
+    void syntax_error(const char *message, Token token)
 {
     printf("Lizard Error in line %d : %s. Found %s",token.line, message, token_to_string(token.type));
     if (token.type == TOKEN_ID)

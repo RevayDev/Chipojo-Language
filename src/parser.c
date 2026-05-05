@@ -18,14 +18,17 @@ void consume(TypeToken type, char *message)
 }
 
 // Prototypes
-double comparison_op(double left, TypeToken op, double right);
+Value comparison_op(Value left, TypeToken op, Value right,int line);
 void concat_element(char *buffer, size_t buffsize);
 void print_concat();
 
 void if_stmt()
 {
     consume(TOKEN_IF, "if error");
-    double cond = expression();
+    Value cond_val = expression();
+    int cond = (cond_val.type == VAR_NUMBER && cond_val.value.num == 0) ||
+               (cond_val.type == VAR_STRING && cond_val.value.str[0] == '\0') ? 0 : 1;
+    
     consume(TOKEN_LEFTBRACE, "{ error");
 
     int executed = 0;
@@ -44,7 +47,9 @@ void if_stmt()
     while (current_token.type == TOKEN_ELIF)
     {
         forward();
-        double elif_cond = expression();
+        Value elif_cond_val = expression();
+        int elif_cond = (elif_cond_val.type == VAR_NUMBER && elif_cond_val.value.num == 0) ||
+                                (elif_cond_val.type == VAR_STRING && elif_cond_val.value.str[0] == '\0')? 0: 1;
         consume(TOKEN_LEFTBRACE, "{ error");
         if (!executed && elif_cond != 0)
         {
@@ -82,7 +87,10 @@ void while_stmt(void)
     {
         indx = after_cond;
         forward();
-        double cond = expression();
+        Value cond_val = expression();
+         int cond = (cond_val.type == VAR_NUMBER && cond_val.value.num == 0) ||
+               (cond_val.type == VAR_STRING && cond_val.value.str[0] == '\0') ? 0 : 1;
+    
         consume(TOKEN_LEFTBRACE, "Error {");
         if (cond != 0)
         {
@@ -115,7 +123,8 @@ void skip_block()
 }
 
 void block()
-{
+{   
+    Token token = current_token;
     while (current_token.type != TOKEN_RIGHTBRACE && current_token.type != TOKEN_EOF)
     {
         if (current_token.type == TOKEN_PRINT)
@@ -128,183 +137,289 @@ void block()
             while_stmt();
         else
         {
-            printf("Error invalid sentence in block (token %d)\n", current_token.type);
+            syntax_error("Invalid sentence\n", token);
             exit(1);
         }
     }
     consume(TOKEN_RIGHTBRACE, "error }");
 }
 
-double expression()
+Value expression()
 {
-    double left = arith_expr();
+    Value left = arith_expr();
     while (current_token.type == TOKEN_EQ || current_token.type == TOKEN_NE ||
            current_token.type == TOKEN_LT || current_token.type == TOKEN_GT ||
            current_token.type == TOKEN_LE || current_token.type == TOKEN_GE)
     {
         TypeToken op = current_token.type;
+        int current_line = current_token.line;
         forward();
-        double right = arith_expr();
-        left = comparison_op(left, op, right);
+        Value right = arith_expr();
+        left = comparison_op(left, op, right,current_line);
     }
+    
     return left;
 }
 
-double arith_expr()
+Value arith_expr()
 {
-    double left = term();
+    Value left = term();
     while (current_token.type == TOKEN_SUM || current_token.type == TOKEN_REST)
     {
-        if (current_token.type == TOKEN_SUM)
+        Token token = current_token;
+        TypeToken op = current_token.type;
+        forward();
+        Value right = term();
+
+        if (left.type == VAR_NUMBER && right.type == VAR_NUMBER)
         {
-            forward();
-            left += term();
+            if (op == TOKEN_SUM)
+                left.value.num += right.value.num;
+            else
+                left.value.num -= right.value.num;
+        }
+        else if (left.type == VAR_STRING && right.type == VAR_STRING && op == TOKEN_SUM)
+        {
+            char tmp[512];
+            snprintf(tmp, sizeof(tmp), "%s%s", left.value.str, right.value.str);
+            strcpy(left.value.str, tmp);
+        }
+        else if (left.type == VAR_STRING && right.type == VAR_NUMBER && op == TOKEN_SUM)
+        {
+            char tmp[512];
+            snprintf(tmp, sizeof(tmp), "%s%g", left.value.str, right.value.num);
+            strcpy(left.value.str, tmp);
+        }
+        else if (left.type == VAR_NUMBER && right.type == VAR_STRING && op == TOKEN_SUM)
+        {
+            char tmp[512];
+            snprintf(tmp, sizeof(tmp), "%g%s", left.value.num, right.value.str);
+            strcpy(left.value.str, tmp);
+            left.type = VAR_STRING;
         }
         else
         {
-            forward();
-            left -= term();
+            syntax_error("Error bad Arith",token);
         }
     }
     return left;
 }
 
-double comparison_op(double left, TypeToken op, double right)
+Value comparison_op(Value left, TypeToken op, Value right,int line)
 {
-    switch (op)
+    int result = 0;
+    if (left.type == VAR_NUMBER && right.type == VAR_NUMBER)
     {
-    case TOKEN_EQ:
-        return left == right;
-    case TOKEN_NE:
-        return left != right;
-    case TOKEN_LT:
-        return left < right;
-    case TOKEN_GT:
-        return left > right;
-    case TOKEN_LE:
-        return left <= right;
-    case TOKEN_GE:
-        return left >= right;
-    default:
-        return 0;
+        double l = left.value.num, r = right.value.num;
+        switch (op)
+        {
+        case TOKEN_EQ:
+            result = (l == r);
+            break;
+        case TOKEN_NE:
+            result = (l != r);
+            break;
+        case TOKEN_LT:
+            result = (l < r);
+            break;
+        case TOKEN_GT:
+            result = (l > r);
+            break;
+        case TOKEN_LE:
+            result = (l <= r);
+            break;
+        case TOKEN_GE:
+            result = (l >= r);
+            break;
+        default:
+            printf("Wrong operation");
+        }
     }
+    else if (left.type == VAR_STRING && right.type == VAR_STRING)
+    {
+        int cmp = strcmp(left.value.str, right.value.str);
+        switch (op)
+        {
+        case TOKEN_EQ:
+            result = (cmp == 0);
+            break;
+        case TOKEN_NE:
+            result = (cmp != 0);
+            break;
+        case TOKEN_LT:
+            result = (cmp < 0);
+            break;
+        case TOKEN_GT:
+            result = (cmp > 0);
+            break;
+        case TOKEN_LE:
+            result = (cmp <= 0);
+            break;
+        case TOKEN_GE:
+            result = (cmp >= 0);
+            break;
+        default:
+            syntax_error_line("Wrong operation",line);
+        }
+    }
+    else
+    {
+        switch (op)
+        {
+        case TOKEN_EQ:
+            result = 0;
+            break;
+        case TOKEN_NE:
+            result = 1;
+            break;
+        default:
+            syntax_error_line("Wrong operation", line);
+        }
+    }
+    Value v;
+    v.type = VAR_NUMBER;
+    v.value.num = result;
+    return v;
 }
 
-double term()
+Value term()
 {
-    double left = factor();
+    Value left = factor();
     while (current_token.type == TOKEN_MUL || current_token.type == TOKEN_DIV)
     {
         Token token = current_token;
+        TypeToken op = current_token.type;
+        forward();
+        Value right = factor();
 
-        if (current_token.type == TOKEN_MUL)
+        if (left.type == VAR_NUMBER && right.type == VAR_NUMBER)
         {
-            forward();
-            left *= factor();
-        }
-        else
-        {
-            forward();
-            double divisor = factor();
-            if (divisor == 0)
+            if (op == TOKEN_MUL)
+                left.value.num *= right.value.num;
+            else
             {
-                syntax_error("Division by zero", token);
-                exit(1);
+                double divisor = right.value.num;
+                if (divisor == 0)
+                {
+                    syntax_error("Division by zero", token);
+                    exit(1);
+                }
+                left.value.num /= right.value.num;
             }
-            left /= divisor;
         }
     }
     return left;
 }
 
-double factor()
-{ // Operator Prefix ++ --
-    if (current_token.type == TOKEN_INC || current_token.type == TOKEN_DEC)
-    {
-        TypeToken op = current_token.type;
-        forward();
-        if (current_token.type != TOKEN_ID)
+    Value factor()
+    { // Operator Prefix ++ --
+        Value v;
+        v.type = VAR_NUMBER;
+
+        if (current_token.type == TOKEN_INC || current_token.type == TOKEN_DEC)
+        {
+            Token token = current_token;
+            TypeToken op = current_token.type;
+            forward();
+            if (current_token.type != TOKEN_ID)
+            {
+                syntax_error("Syntax Error", token);
+                exit(1);
+            }
+
+            char name[64];
+            strcpy(name, current_token.name);
+            Value old = getVarValue(name);
+            if (old.type != VAR_NUMBER)
+            {
+                syntax_error("Bad operation", token);
+            }
+            double new_val = (op == TOKEN_INC) ? old.value.num + 1 : old.value.num - 1;
+            assignNumberVar(name, new_val);
+            forward();
+            v.type = VAR_NUMBER;
+            v.value.num = new_val;
+            return v;
+        }
+        // Boolean
+        if (current_token.type == TOKEN_TRUE)
+        {
+            forward();
+            v.value.num = 1;
+            return v;
+        }
+        if (current_token.type == TOKEN_FALSE)
+        {
+            forward();
+            v.value.num = 0;
+            return v;
+        }
+        // Number
+        else if (current_token.type == TOKEN_NUM)
+        {
+            v.value.num = current_token.value;
+            forward();
+            return v;
+        }
+        else if (current_token.type == TOKEN_ID)
+        {
+            char name[64];
+            strcpy(name, current_token.name);
+            forward();
+            if (current_token.type == TOKEN_INC || current_token.type == TOKEN_DEC)
+            {
+                TypeToken op = current_token.type;
+                forward();
+                Value old = getVarValue(name);
+                double new_val = (op == TOKEN_INC) ? old.value.num + 1 : old.value.num - 1;
+                assignNumberVar(name, new_val);
+                v.value.num = old.value.num;
+                return v;
+            }
+            v = getVarValue(name);
+            return v;
+        }
+        else if (current_token.type == TOKEN_PARENTLEFT)
+        {
+            forward();
+            v = expression();
+            consume(TOKEN_PARENTRIGHT, "Falta ')'");
+            return v;
+        }
+        else if (current_token.type == TOKEN_STRING){
+
+            strcpy(v.value.str, current_token.name);
+            v.type = VAR_STRING;
+            forward();
+            return v;
+        }
+        else
         {
             syntax_error("Syntax Error", current_token);
             exit(1);
         }
+    }
 
-        char name[64];
-        strcpy(name, current_token.name);
-        double old = getNumberVar(name);
-        double new_val = (op == TOKEN_INC) ? old + 1 : old - 1;
-        assignNumberVar(name, new_val);
-        forward();
-        return new_val;
-    }
-    // Boolean
-    if (current_token.type == TOKEN_TRUE)
+    void assign_compound(char *name, TypeToken op, double val, int op_line)
     {
-        forward();
-        return 1;
-    }
-    if (current_token.type == TOKEN_FALSE)
-    {
-        forward();
-        return 0; 
-    }
-    // Number
-    else if (current_token.type == TOKEN_NUM)
-    {
-        double val = current_token.value;
-        forward();
-        return val;
-    }
-    else if (current_token.type == TOKEN_ID)
-    {
-        char name[64];
-        strcpy(name, current_token.name);
-        forward();
-        if (current_token.type == TOKEN_INC || current_token.type == TOKEN_DEC)
+        Value v = getVarValue(name);
+        double current = v.value.num;
+        double result;
+        switch (op)
         {
-            TypeToken op = current_token.type;
-            forward();
-            double old = getNumberVar(name);
-            double new_val = (op == TOKEN_INC) ? old + 1 : old - 1;
-            assignNumberVar(name, new_val);
-            return old;
-        }
-
-        return getNumberVar(name);
-    }
-    else if (current_token.type == TOKEN_PARENTLEFT)
-    {
-        forward();
-        double val = expression();
-        consume(TOKEN_PARENTRIGHT, "Falta ')'");
-        return val;
-    }
-    else
-    {
-        syntax_error("Syntax Error", current_token);
-        exit(1);
-    }
-}
-
-void assign_compound(char *name, TypeToken op, double val, int op_line)
-{
-    double current = getNumberVar(name);
-    double result;
-    switch (op)
-    {
-    case TOKEN_PLUS_ASSIGN:
-        result = current + val;
-        break;
-    case TOKEN_MINUS_ASSIGN:
-        result = current - val;
-        break;
-    case TOKEN_MULT_ASSIGN:
-        result = current * val;
-        break;
-    case TOKEN_DIV_ASSIGN:
-        if (val == 0)
-        {
-            printf("Error in line %d:Division by zero",op_line);
+        case TOKEN_PLUS_ASSIGN:
+            result = current + val;
+            break;
+        case TOKEN_MINUS_ASSIGN:
+            result = current - val;
+            break;
+        case TOKEN_MULT_ASSIGN:
+            result = current * val;
+            break;
+        case TOKEN_DIV_ASSIGN:
+            if (val == 0)
+            {
+                syntax_error_line("Division by zero", op_line);
                 exit(1);
         }
         result = current / val;
@@ -323,16 +438,19 @@ void assignation()
 
     if (current_token.type == TOKEN_INC || current_token.type == TOKEN_DEC)
     {
+        Token token = current_token;
         TypeToken op = current_token.type;
+
         forward();
         if (current_token.type != TOKEN_ID)
         {
-            printf("Error: se esperaba identificador\n");
+            syntax_error("",token);
             exit(1);
         }
         strcpy(name, current_token.name);
         forward();
-        double old = getNumberVar(name);
+        Value v = getVarValue(name);
+        double old = v.value.num;
         double new_val = (op == TOKEN_INC) ? old + 1 : old - 1;
         assignNumberVar(name, new_val);
         return;
@@ -346,7 +464,8 @@ void assignation()
         {
             TypeToken op = current_token.type;
             forward();
-            double old = getNumberVar(name);
+            Value v = getVarValue(name);
+            double old = v.value.num;
             double new_val = (op == TOKEN_INC) ? old + 1 : old - 1;
             assignNumberVar(name, new_val);
             return;
@@ -361,22 +480,21 @@ void assignation()
         TypeToken op = current_token.type;
         double current_line = current_token.line;
         forward();
-        double val = expression();
-        assign_compound(name, op, val,current_line);
+        Value val = expression();
+        assign_compound(name, op, val.value.num,current_line);
         return;
     }
 
     consume(TOKEN_ASIGN, "not found '='");
 
-    if (current_token.type == TOKEN_STRING)
+    Value val = expression();
+    if (val.type == VAR_STRING)
     {
-        assignStringVar(name, current_token.name);
-        forward();
+        assignStringVar(name, val.value.str);
     }
     else
     {
-        double val = expression();
-        assignNumberVar(name, val);
+        assignNumberVar(name, val.value.num);
     }
 }
 
@@ -396,8 +514,8 @@ void concat_element(char *buffer, size_t buffsize)
         TypeToken next = peek_next_token_type();
         if (next == TOKEN_INC || next == TOKEN_DEC)
         {
-            double val = factor();
-            snprintf(temp, sizeof(temp), "%g", val);
+            Value val = factor();
+            snprintf(temp, sizeof(temp), "%g", val.value.num);
             strncat(buffer, temp, buffsize - strlen(buffer) - 1);
         }
         else
@@ -430,8 +548,8 @@ void concat_element(char *buffer, size_t buffsize)
     }
     else
     {
-        double val = factor();
-        snprintf(temp, sizeof(temp), "%g", val);
+        Value val = factor();
+        snprintf(temp, sizeof(temp), "%g", val.value.num);
         strncat(buffer, temp, buffsize - strlen(buffer) - 1);
     }
 }
@@ -484,7 +602,7 @@ void program()
         }
         else
         {
-            printf("Error, invalid statement (token %d)\n", current_token.type);
+            syntax_error("invalid statement", current_token);
             exit(1);
         }
     }

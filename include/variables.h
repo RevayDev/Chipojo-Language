@@ -24,10 +24,20 @@ typedef struct
     } value;
 } Var;
 
+
+typedef struct
+{
+    VarType type;
+    union
+    {
+        double num;
+        char str[256];
+    } value;
+} Value;
+
 void assignNumberVar(char *name, double val);
 void assignStringVar(char *name, char *val);
-double getNumberVar(char *name);
-char *getStringVar(char *name);
+Value getVarValue(char *name);
 
 extern Var vars_table[];
 extern int num_vars;

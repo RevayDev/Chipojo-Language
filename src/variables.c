@@ -34,34 +34,21 @@ void assignStringVar(char *name, char *val)
     num_vars++;
 }
 
-double getNumberVar(char *name)
+Value getVarValue(char *name)
 {
+    Value v;
     for (int i = 0; i < num_vars; i++)
+    {
         if (strcmp(vars_table[i].name, name) == 0)
         {
-            if (vars_table[i].type != VAR_NUMBER)
-            {
-                printf("Error: variable '%s'  no integer \n", name);
-                exit(1);
-            }
-            return vars_table[i].value.val;
+            v.type = vars_table[i].type;
+            if (v.type == VAR_NUMBER)
+                v.value.num = vars_table[i].value.val;
+            else
+                strcpy(v.value.str, vars_table[i].value.str_val);
+            return v;
         }
-    undefined_variable_error(name,current_token.line);
-    exit(1);
-}
-
-char *getStringVar(char *name)
-{
-    for (int i = 0; i < num_vars; i++)
-        if (strcmp(vars_table[i].name, name) == 0)
-        {
-            if (vars_table[i].type != VAR_STRING)
-            {
-                printf("Error: variable '%s' no string\n", name);
-                exit(1);
-            }
-            return vars_table[i].value.str_val;
-        }
-    undefined_variable_error(name,current_token.line);
-    exit(1);
+    }
+    undefined_variable_error(name, current_token.line);
+    return v;
 }
