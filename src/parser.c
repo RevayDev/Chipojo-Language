@@ -18,17 +18,64 @@ void consume(TypeToken type, char *message)
 }
 
 // Prototypes
+Value logical_or(void);
+Value logical_and(void);
 Value comparison_op(Value left, TypeToken op, Value right,int line);
 void concat_element(char *buffer, size_t buffsize);
 void print_concat();
+
+int is_truthy(Value v) {
+    if (v.type == VAR_NUMBER) return v.value.num != 0;
+    if (v.type == VAR_STRING) return v.value.str[0] != '\0';
+    return 0; // Null values
+}
+
+Value expression(){
+    return logical_or();
+}
+
+Value logical_or(void) {
+    Value left = logical_and();
+    while (current_token.type == TOKEN_OR) {
+        forward();
+        Value right = logical_and();
+        if (is_truthy(left)) {
+            Value v; v.type = VAR_NUMBER; v.value.num = 1; return v;
+        } else {
+            int truthy = is_truthy(right);
+            Value v; v.type = VAR_NUMBER; v.value.num = truthy ? 1 : 0;
+            return v;
+        }
+    }
+    return left;
+}
+
+Value logical_and(void) {
+    Value left = comparison_expr(); 
+    while (current_token.type == TOKEN_AND) {
+        forward();
+        Value right = comparison_expr();
+        if (!is_truthy(left)) {
+            // Cortocircuito: false, devuelve 0
+            Value v; v.type = VAR_NUMBER; v.value.num = 0; return v;
+        } else {
+            int truthy = is_truthy(right);
+            Value v; v.type = VAR_NUMBER; v.value.num = truthy ? 1 : 0;
+            return v;
+        }
+    }
+    return left;
+}
+
+
 
 void if_stmt()
 {
     consume(TOKEN_IF, "if error");
     Value cond_val = expression();
-    int cond = (cond_val.type == VAR_NUMBER && cond_val.value.num == 0) ||
-               (cond_val.type == VAR_STRING && cond_val.value.str[0] == '\0') ||
-               (cond_val.type == VAR_NULL) ? 0 : 1 ;
+    int cond = is_truthy(cond_val);
+
+    //    (cond_val.type == VAR_NULL) ? 0 : 1 ;
     
     consume(TOKEN_LEFTBRACE, "{ error");
 
@@ -49,9 +96,7 @@ void if_stmt()
     {
         forward();
         Value elif_cond_val = expression();
-        int elif_cond = (elif_cond_val.type == VAR_NUMBER && elif_cond_val.value.num == 0) ||
-                        (elif_cond_val.type == VAR_STRING && elif_cond_val.value.str[0] == '\0')||
-                        (elif_cond_val.type == VAR_NULL) ? 0 : 1 ;
+        int elif_cond = is_truthy(elif_cond_val);
         consume(TOKEN_LEFTBRACE, "{ error");
         if (!executed && elif_cond != 0)
         {
@@ -90,10 +135,8 @@ void while_stmt(void)
         indx = after_cond;
         forward();
         Value cond_val = expression();
-         int cond = (cond_val.type == VAR_NUMBER && cond_val.value.num == 0) ||
-               (cond_val.type == VAR_STRING && cond_val.value.str[0] == '\0')||
-               (cond_val.type == VAR_NULL) ? 0 : 1 ;
-    
+        int cond = is_truthy(cond_val);
+
         consume(TOKEN_LEFTBRACE, "Error {");
         if (cond != 0)
         {
@@ -147,7 +190,7 @@ void block()
     consume(TOKEN_RIGHTBRACE, "error }");
 }
 
-Value expression()
+Value comparison_expr()
 {
     Value left = arith_expr();
     while (current_token.type == TOKEN_EQ || current_token.type == TOKEN_NE ||
@@ -381,7 +424,19 @@ Value term()
             v.type = VAR_NUMBER;
             v.value.num = new_val;
             return v;
-        }else if (current_token.type == TOKEN_TRUE)
+        }
+        else if (current_token.type == TOKEN_NOT)
+        {
+            forward();
+            Value operand = factor(); 
+            int truthy = is_truthy(operand);
+            Value v;
+            v.type = VAR_NUMBER;
+            v.value.num = truthy ? 0 : 1;
+            return v;
+        }
+
+        else if (current_token.type == TOKEN_TRUE)
         // Boolean
         {
             forward();

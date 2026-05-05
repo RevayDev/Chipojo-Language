@@ -93,6 +93,12 @@ Token nextToken()
             t.type = TOKEN_FALSE;
         else if (strcmp(t.name, "null") == 0)
             t.type = TOKEN_NULL;
+        else if (strcmp(t.name, "and") == 0)
+            t.type = TOKEN_AND;
+        else if (strcmp(t.name, "or") == 0)
+            t.type = TOKEN_OR;
+        else if (strcmp(t.name, "not") == 0)
+            t.type = TOKEN_NOT;
         else
             t.type = TOKEN_ID;
         return t;

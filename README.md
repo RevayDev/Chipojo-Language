@@ -6,6 +6,7 @@
 
 - **Variables** – integers, float, boolean and strings  
 - **Assignment** – `=`  
+- **Logical Operator** – `and, or, not`  
 - **Compound Assignment** – `= += -= *= /=`  
 - **Arithmetic** – `+ - * / ++ --` and parentheses  
 - **Comparisons** – `== != < > <= >=` (return `1` or `0`)  

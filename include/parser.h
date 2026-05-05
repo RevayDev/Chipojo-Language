@@ -7,6 +7,7 @@
 void forward();
 void consume(TypeToken type, char *message);
 Value expression();
+Value comparison_expr();
 Value arith_expr();
 Value term();
 Value factor();
