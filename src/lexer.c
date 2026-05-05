@@ -18,6 +18,26 @@ void jumpBlankspace(void)
         nextChar();
 }
 
+
+void skipLineComment(void){
+    while (currentChar() != '\0' && currentChar() != '\n'){
+        nextChar();
+    }
+}
+
+void skipBlockComment(void)
+{
+    while (1)
+    {
+        if (currentChar() == '*' && peekChar()=='/'){
+            nextChar();
+            nextChar();
+            break;
+        }
+        nextChar();
+    }
+}
+
 void jumpBOM(void)
 {
     if ((unsigned char)input[0] == 0xEF && (unsigned char)input[1] == 0xBB && (unsigned char)input[2] == 0xBF)
@@ -130,6 +150,17 @@ Token nextToken()
         }
         return t;
     }
+    if (c == '/' && peekChar() == '/')
+    {
+        skipLineComment();
+        return nextToken();
+    }
+
+    if (c == '/' && peekChar() == '*'){
+        skipBlockComment();
+        return nextToken();
+    }
+
     // Operator
     if (c == '=' && peekChar() == '=')
     {
