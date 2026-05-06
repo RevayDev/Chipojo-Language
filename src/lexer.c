@@ -293,6 +293,9 @@ Token nextToken()
     case '{':
         t.type = TOKEN_LEFTBRACE;
         break;
+    case '!':
+        t.type = TOKEN_NOT;
+        break;
     case '}':
         t.type = TOKEN_RIGHTBRACE;
         break;
