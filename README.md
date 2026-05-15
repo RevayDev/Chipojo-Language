@@ -15,6 +15,7 @@
 - **Print** – `print(...)` with `+` concatenation (strings, ints, variables)  
 - **Conditionals** – `if`, `elif`, `else` with `{ }` blocks  
 - **Loops** – `while`  
+- **Functions** – user‑defined with func, parameters, return, and recursion
 - **File extension** – `.lzd`  
 - **Version** – `Lizard -v` shows ASCII art
 
@@ -138,3 +139,35 @@ if (size >= 10) {
 print("2 + 2 = " + (2 + 2))
 print("5 > 3 is " + (5 > 3))
 ```
+### Functions
+
+Lizard allows you to define reusable functions with parameters and return values. Functions are declared using the keyword func, followed by the name, parameters in parentheses, and the body enclosed in braces { }. A function can return a value using return.
+
+Declaration
+```lizard
+func name(parameter1, parameter2, ...) {
+    // function body
+    return expression
+}
+```
+Calling a function
+```lizard
+variable = name(argument1, argument2, ...)
+```
+Recursive Example: Fibonacci
+```lizard
+func fib(n) {
+    if n <= 1 {
+        return n
+    } else {
+        return fib(n-1) + fib(n-2)
+    }
+}
+
+i = 0
+while i < 10 {
+    print(fib(i))
+    i = i + 1
+}
+```
+This program prints the first 10 Fibonacci numbers: 0, 1, 1, 2, 3, 5, 8, 13, 21, 34.

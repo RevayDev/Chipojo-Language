@@ -93,6 +93,10 @@ Token nextToken()
             t.type = TOKEN_FALSE;
         else if (strcmp(t.name, "null") == 0)
             t.type = TOKEN_NULL;
+        else if (strcmp(t.name, "func") == 0)
+            t.type = TOKEN_FUNC;
+        else if (strcmp(t.name, "return") == 0)
+            t.type = TOKEN_RETURN;
         else if (strcmp(t.name, "and") == 0)
             t.type = TOKEN_AND;
         else if (strcmp(t.name, "or") == 0)
@@ -154,7 +158,7 @@ Token nextToken()
         else
         {
             t.type = TOKEN_ERROR;
-            printf("Error: cadena no cerrada\n");
+            printf("Error: Unclose String\n");
         }
         return t;
     }

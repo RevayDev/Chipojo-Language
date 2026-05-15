@@ -40,10 +40,12 @@ typedef enum
     TOKEN_DIV_ASSIGN,   //\ /=
     TOKEN_TRUE,
     TOKEN_FALSE,
-    TOKEN_NULL, // null
-    TOKEN_AND,  // and
-    TOKEN_OR,   // or
-    TOKEN_NOT,  // not 
+    TOKEN_FUNC,
+    TOKEN_RETURN,
+        TOKEN_NULL, // null
+    TOKEN_AND,      // and
+    TOKEN_OR,       // or
+    TOKEN_NOT,      // not
     TOKEN_ERROR,
     TOKEN_EOF
 } TypeToken;

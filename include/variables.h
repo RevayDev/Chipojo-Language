@@ -3,14 +3,17 @@
 
 #include "lizard.h"
 #include "error.h"
+#define MAX_SCOPE 1000
 
 // Variables
 typedef enum
 {
     VAR_NUMBER,
     VAR_STRING,
+    VAR_FUNCTION,
     VAR_NULL
 } VarType;
+
 
 typedef struct
 {
@@ -18,29 +21,37 @@ typedef struct
     VarType type;
     union
     {
-        double val;
-        char str_val[256];
-
-    } value;
-} Var;
-
-
-typedef struct
-{
-    VarType type;
-    union
-    {
         double num;
         char str[256];
     } value;
+    
+    struct 
+    {
+        int start ;
+        char ** param;
+        int param_count;
+    } func;
+
 } Value;
+
+typedef struct
+{
+    Value vars[MAX_SCOPE];
+    int num_vars;
+
+} Scope;
 
 void assignNumberVar(char *name, double val);
 void assignStringVar(char *name, char *val);
+void function_definition(char *name, int start,char** params,int param_count);
 void assignNullVar(char *name);
 Value getVarValue(char *name);
+Value getFunction(char *name);
+void setVariable(char *name, Value value);
+void pushScope();
+void popScope();
 
-extern Var vars_table[];
-extern int num_vars;
+extern Scope scope_stack[MAX_SCOPE];
+extern int scope_depth;
 
 #endif

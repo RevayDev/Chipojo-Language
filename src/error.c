@@ -66,6 +66,8 @@ const char *token_to_string(TypeToken type)
         return "'>='";
     case TOKEN_ERROR:
         return "error";
+    case TOKEN_RETURN:
+        return "return";
     case TOKEN_EOF:
         return "file end";
     default:
@@ -93,18 +95,21 @@ void syntax_error_line(const char *message, int line){
     {
         printf(" (\"%s\")", token.name);
     }
+    else{
+        printf(" (\"%s\")", token_to_string(token.type));
+    }
     printf("\n");
     exit(1);
 }
 
 void undefined_variable_error(const char *var_name,int line)
 {
-    printf("Lizard Error in line %d : '%s' Undefined\n",line, var_name);
+    printf("Lizard Error in line %d : '%s' Undefined value \n in this scope",line, var_name);
     exit(1);
 }
 
 void type_error(const char *var_name, const char *expected, const char *found, int line)
 {
-    printf("Lizard Error in line %d : variable '%s' is type %s, was espected  %s\n",line, var_name, found, expected);
+    printf("Lizard Error in line %d : variable '%s' is type %s, expected %s\n",line, var_name, found, expected);
     exit(1);
 }

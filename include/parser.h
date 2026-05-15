@@ -13,8 +13,10 @@ Value term();
 Value factor();
 void assignation();
 void print_stmt();
-void if_stmt();
-void block();
+void defineNewFunction();
+Value function_call(char *name, Value v[],int count,int last_indx);
+Value if_stmt();
+Value block();
 void skip_block();
 void program();
 

@@ -17,7 +17,7 @@ int main(int argc, char **argv)
 
     if (argc < 2)
     {
-        printf("Use: %s archivo.lzd\n", argv[0]);
+        printf("Use: %s archive.lzd\n", argv[0]);
         return 1;
     }
 
