@@ -20,13 +20,22 @@ Value native_print(Value *args, int arg_count, int line)
     }
     printf("\n");
     Value v = {0};
-    strcpy(v.name, "Printer");
     v.type = VAR_NULL;
     return v;
 }
 
 Value native_abs(Value *args, int arg_count, int line)
 {
+    if (arg_count == 0)
+    {
+        syntax_error_line("Few argument in abs", line);
+    }
+
+    if (arg_count > 1)
+    {
+        syntax_error_line("Too much argument in abs", line);
+    }
+
     Value result = args[0];
     if (result.type != VAR_NUMBER){
         char message[256];

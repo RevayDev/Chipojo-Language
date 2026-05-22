@@ -5,6 +5,13 @@
 
 Value string_upper(Value *args, int arg_count, int line)
 {
+
+    if (arg_count != 1)
+    {
+        syntax_error_line("Upper no need argument", line);
+    }
+
+
     Value self = args[0];
     Value result = {0};
 
@@ -23,6 +30,12 @@ Value string_upper(Value *args, int arg_count, int line)
 
 Value string_lower(Value *args, int arg_count, int line)
 {
+
+    if (arg_count != 1)
+    {
+        syntax_error_line("Lower no need argument", line);
+    }
+
     Value self = args[0];
     Value result = {0};
 
@@ -41,6 +54,12 @@ Value string_lower(Value *args, int arg_count, int line)
 
 Value string_length(Value *args, int arg_count, int line)
 {
+
+    if (arg_count != 1)
+    {
+        syntax_error_line("No need argument", line);
+    }
+
     Value self = args[0];
     Value result = {0};
 
@@ -58,6 +77,12 @@ Value string_length(Value *args, int arg_count, int line)
 
 Value dict_size(Value *args, int arg_count, int line)
 {
+
+    if (arg_count != 1)
+    {
+        syntax_error_line("Size no need argument", line);
+    }
+
     Value self = args[0];
     Value result = {0};
     result.type = VAR_NUMBER;
@@ -68,6 +93,17 @@ Value dict_size(Value *args, int arg_count, int line)
 
 Value dict_has(Value *args, int arg_count, int line)
 {
+
+    if (arg_count != 2)
+    {
+        syntax_error_line("Need 1 argument", line);
+    }
+
+    if (args[1].type != VAR_STRING)
+    {
+        syntax_error_line("Has argument must be a String", line);
+    }
+
     Value self = args[0];
     char *key = args[1].value.str;
     Value result = {0};
@@ -81,8 +117,38 @@ Value dict_has(Value *args, int arg_count, int line)
 
 Value dict_getter(Value *args, int arg_count, int line)
 {
+    if (arg_count != 2)
+    {
+        syntax_error_line("Need 1 argument", line);
+    }
+
+    if (args[1].type != VAR_STRING)
+    {
+        syntax_error_line("Get argument must be a String", line);
+        }
+
     Value self = args[0];
     char *key = args[1].value.str;
+    Value result = dict_get(self.value.dict, key);
+    return result;
+}
+
+Value dict_setter(Value *args, int arg_count, int line)
+{
+    if (arg_count != 3)
+    {
+        syntax_error_line("Need 2 argument", line);
+    }
+
+    if (args[1].type != VAR_STRING)
+    {
+        syntax_error_line("Set first argument must be a String", line);
+    }
+
+    Value self = args[0];
+    char *key = args[1].value.str;
+    Value *val = &args[2];
+    dict_set(self.value.dict, key,val);
     Value result = dict_get(self.value.dict, key);
     return result;
 }
@@ -97,7 +163,8 @@ MethodEntry string_methods[] = {
 MethodEntry dict_methods[] = {
     {"size", dict_size},
     {"has", dict_has},
-    {"get",dict_getter},
+    {"get", dict_getter},
+    {"set", dict_setter},
     {NULL, NULL}};
 
 Value call_method(Value object,char *method,Value *args,int arg_count,int line)
@@ -133,10 +200,7 @@ Value call_method(Value object,char *method,Value *args,int arg_count,int line)
                 final_args[j + 1] = args[j];
             }
 
-            return table[i].func(
-                final_args,
-                arg_count + 1,
-                line);
+            return table[i].func(final_args,arg_count + 1,line);
         }
     }
     sprintf(message, "Method not found, type %d",object.type);
