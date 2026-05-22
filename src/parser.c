@@ -565,6 +565,18 @@
                 return v;
             }
             // Number
+            else if (current_token.type == TOKEN_REST)
+            {
+                forward();
+                if (current_token.type != TOKEN_NUM){
+                    char message[256];
+                    sprintf(message, "Variable %s is not a number",current_token.name);
+                    syntax_error_line(message, current_token.line);
+                }
+                v.value.num = -current_token.value;
+                forward();
+                return v;
+            }
             else if (current_token.type == TOKEN_NUM)
             {
                 v.value.num = current_token.value;

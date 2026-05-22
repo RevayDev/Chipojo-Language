@@ -1,10 +1,6 @@
 #include "native.h"
 #include "parser.h"
 
-static NativeFunctions natives[] = {
-    {"print", native_print},
-    {NULL, NULL}};
-
 Value native_print(Value *args, int arg_count, int line)
 {
     for (int i = 0; i < arg_count; i++)
@@ -15,7 +11,8 @@ Value native_print(Value *args, int arg_count, int line)
             printf("%s", args[i].value.str);
         else if (args[i].type == VAR_NULL)
             printf("null");
-        else if (args[i].type == VAR_DICT){
+        else if (args[i].type == VAR_DICT)
+        {
             dict_print(args[i].value.dict);
         }
         if (i < arg_count - 1)
@@ -23,10 +20,29 @@ Value native_print(Value *args, int arg_count, int line)
     }
     printf("\n");
     Value v = {0};
-    strcpy(v.name,"Printer");
+    strcpy(v.name, "Printer");
     v.type = VAR_NULL;
     return v;
 }
+
+Value native_abs(Value *args, int arg_count, int line)
+{
+    Value result = args[0];
+    if (result.type != VAR_NUMBER){
+        char message[256];
+        sprintf(message,"Var %s is not a number",result.name);
+        syntax_error_line(message,line);
+    }
+
+    result.value.num = abs(result.value.num);
+
+    return result;
+}
+
+static NativeFunctions natives[] = {
+    {"print", native_print},
+    {"abs", native_abs},
+    {NULL, NULL}};
 
 void register_natives()
 {
