@@ -21,6 +21,24 @@ Value string_upper(Value *args, int arg_count, int line)
     return result;
 }
 
+Value string_lower(Value *args, int arg_count, int line)
+{
+    Value self = args[0];
+    Value result = {0};
+
+    result.type = VAR_STRING;
+
+    strcpy(result.value.str, self.value.str);
+
+    for (int i = 0; result.value.str[i]; i++)
+    {
+        result.value.str[i] =
+            tolower(result.value.str[i]);
+    }
+
+    return result;
+}
+
 Value string_length(Value *args, int arg_count, int line)
 {
     Value self = args[0];
@@ -51,17 +69,21 @@ Value dict_size(Value *args, int arg_count, int line)
 Value dict_has(Value *args, int arg_count, int line)
 {
     Value self = args[0];
-    char* key = args[1].value.str;
+    char *key = args[1].value.str;
     Value result = {0};
     result.type = VAR_NUMBER;
     result.value.num = 0;
-    Value dict_val = dict_get(self.value.dict,key);
-    if (dict_val.type != VAR_NULL) result.value.num = 1;
+    Value dict_val = dict_get(self.value.dict, key);
+    if (dict_val.type != VAR_NULL)
+        result.value.num = 1;
     return result;
 }
 
+
+
 MethodEntry string_methods[] = {
     {"upper", string_upper},
+    {"lower", string_lower},
     {"length", string_length},
     {"size", string_length},
     {NULL, NULL}};
