@@ -12,7 +12,7 @@
 - **Compound Assignment** – `= += -= *= /=`  
 - **Arithmetic** – `+ - * / ++ --` and parentheses  
 - **Comparisons** – `== != < > <= >=` (return `1` or `0`)  
-- **Print** – `print(...)` with `+` concatenation (strings, ints, variables)  
+- **Print** – `show(...)` with `+` concatenation (strings, ints, variables)  
 - **Conditionals** – `if`, `elif`, `else` with `{ }` blocks  
 - **Loops** – `while`  
 - **Dictionaries** – `{key:value}
@@ -51,13 +51,13 @@ name = "Lizard"
 size = 10
 
 if (size >= 10) {
-    print("Welcome to " + name + "!")
+    show("Welcome to " + name + "!")
 } else {
-    print("too small")
+    show("too small")
 }
 
-print("2 + 2 = " + (2 + 2))
-print("5 > 3 is " + (5 > 3))
+show("2 + 2 = " + (2 + 2))
+show("5 > 3 is " + (5 > 3))
 ```
 Run it:
 
@@ -124,7 +124,7 @@ Lizard/
 
 Once installed, the extension automatically activates when you open a `.lzd` file.
 
-- Keywords (`if`, `else`, `while`, `print`, `and`, `or`, `not`) will have syntax highlighting.
+- Keywords (`if`, `else`, `while`, `show`, `and`, `or`, `not`) will have syntax highlighting.
 - Strings, numbers, comments, and operators are also highlighted.
 
 ## Example
@@ -136,13 +136,13 @@ name = "Lizard"
 size = 10
 
 if (size >= 10) {
-    print("Welcome to " + name + "!")
+    show("Welcome to " + name + "!")
 } else {
-    print("too small")
+    show("too small")
 }
 
-print("2 + 2 = " + (2 + 2))
-print("5 > 3 is " + (5 > 3))
+show("2 + 2 = " + (2 + 2))
+show("5 > 3 is " + (5 > 3))
 ```
 
 ## Dictionaries
@@ -159,22 +159,22 @@ person = {"name": "Alice", "age": 30, "active": true}
 Use dot notation to read or assign values:
 
 ```lizard
-print(person.name)   // "Alice"
+show(person.name)   // "Alice"
 person.age = 31      // update existing key
 person.city = "Paris" // add new key-value pair
 ```
 
 ```lizard
 if person.has("age") {
-    print("Age: " + person.age)
+    show("Age: " + person.age)
 }
 ```
 ### Printing a dictionary
 
-print(dict) displays the dictionary in a compact format:
+show(dict) displays the dictionary in a compact format:
 
 ```lizard
-print(person)   // {name:Alice,age:31,active:true,city:Paris}
+show(person)   // {name:Alice,age:31,active:true,city:Paris}
 ```
 
 ### Notes
@@ -208,7 +208,7 @@ func fib(n) {
 
 i = 0
 while i < 10 {
-    print(fib(i))
+    show(fib(i))
     i = i + 1
 }
 ```
