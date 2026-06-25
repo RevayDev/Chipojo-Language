@@ -1,8 +1,8 @@
 {
   "name": "chipojo-language",
   "displayName": "Chipojo Language",
-  "description": "Syntax highlighting, snippets and language support for Chipojo (.chp)",
-  "version": "0.2.0",
+  "description": "Syntax highlighting, snippets, icon theme and language support for Chipojo (.chp)",
+  "version": "0.3.0",
   "publisher": "luife",
   "license": "MIT",
   "icon": "icon.svg",
@@ -11,7 +11,8 @@
   },
   "categories": [
     "Programming Languages",
-    "Snippets"
+    "Snippets",
+    "Themes"
   ],
   "contributes": {
     "languages": [
@@ -19,7 +20,8 @@
         "id": "chipojo",
         "aliases": ["Chipojo", "chipojo"],
         "extensions": [".chp"],
-        "configuration": "./language-configuration.json"
+        "configuration": "./language-configuration.json",
+        "icon": "icon.svg"
       }
     ],
     "grammars": [
@@ -33,6 +35,13 @@
       {
         "language": "chipojo",
         "path": "./snippets/chipojo.json"
+      }
+    ],
+    "iconThemes": [
+      {
+        "id": "sybo-chipojo",
+        "label": "Sybo Chipojo",
+        "path": "./themes/sybo-icon-theme.json"
       }
     ]
   }
