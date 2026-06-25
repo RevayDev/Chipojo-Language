@@ -30,10 +30,11 @@
 
 - Chipojo-Language/ flattened to root: `src/`, `include/`, `lib/` at project root.
 - `chipojo-vscode/` moved to `extensions/vscode/`.
+- `chpm/` removed — it's a separate project (Chipojo Package Manager).
 - Shared `assets/` directory for icons and resources.
 - Spanish documentation moved to `docs/es/`.
 - Tests consolidated under `test/`.
-- Root `Makefile` builds interpreter and delegates to chpm.
+- Root `Makefile` builds interpreter.
 - CI/CD: `.github/workflows/ci.yml` builds and tests on push/PR.
 - `LICENSE` file added (MIT).
 - `.vscode/settings.json` with shared workspace config.

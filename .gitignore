@@ -1,22 +1,17 @@
 # Binaries
 chipojo
-chpm
 *.o
 *.exe
 *.vsix
 
 # Build artifacts
 obj/
-Chipojo-Language/obj/
 
 # IDE
 .vscode/
 
 # Chipojo packages
 chpm_modules/
-
-# Package manager registry
-~/packets_chpm_create/
 
 # Agent/Codex configs
 .agents/

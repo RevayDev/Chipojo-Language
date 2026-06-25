@@ -14,7 +14,6 @@
 | Component | Description | Location |
 |-----------|-------------|----------|
 | **Interpreter** | Single-pass tree-walk interpreter written in C | `src/` + `include/` |
-| **Package Manager** | `chpm` – npm-like CLI for Chipojo packages | `chpm/` |
 | **VS Code Extension** | Syntax highlighting, snippets, icon theme | `extensions/vscode/` |
 
 ## Quick Start
@@ -47,14 +46,6 @@ make
 
 Install `chipojo-language` v0.3.0+ from `extensions/vscode/` for syntax highlighting, snippets, and icon theme support.
 
-### chpm (Package Manager)
-
-```bash
-cd chpm && make
-chpm init        # Create a new project
-chpm install math  # Install a package
-```
-
 ## Project Structure
 
 ```
@@ -62,10 +53,6 @@ Chipojo/
 ├── src/                  # Interpreter C source
 ├── include/              # Interpreter C headers
 ├── lib/                  # Standard library (.chp modules)
-├── chpm/                 # Package manager (C source)
-│   ├── src/              # chpm source files
-│   ├── include/          # chpm headers
-│   └── packets/          # Built-in package registry
 ├── extensions/vscode/    # VS Code extension
 │   ├── syntaxes/         # TextMate grammar
 │   ├── snippets/         # Code snippets
