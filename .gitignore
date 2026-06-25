@@ -7,3 +7,6 @@ Chipojo-Language/chipojo
 Chipojo-Language/obj/
 chpm/chpm
 .vscode/
+.agents/
+.codex/
+test 
