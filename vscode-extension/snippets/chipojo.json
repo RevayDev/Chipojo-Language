@@ -15,7 +15,7 @@
     "description": "If with elif and else"
   },
   "While loop": {
-    "prefix": ["while", "loop", "mientras"],
+    "prefix": ["while", "loop"],
     "body": "while ${1:condition} {\n\t${2:body}\n}",
     "description": "While loop"
   },

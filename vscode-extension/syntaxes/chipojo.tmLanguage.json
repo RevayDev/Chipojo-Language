@@ -47,7 +47,7 @@
     "keywords": {
       "patterns": [
         {
-          "match": "\\b(if|elif|else|while|mientras|for|switch|case|class|public|private|void|try|catch|func|def|return|null|true|false|and|or|not|import|from|as|export|const|var|let|float|string|bool|default)\\b",
+          "match": "\\b(if|elif|else|while|for|switch|case|class|public|private|void|try|catch|func|def|return|null|true|false|and|or|not|import|from|as|export|const|var|let|float|string|bool|default)\\b",
           "name": "keyword.control.chipojo"
         }
       ]

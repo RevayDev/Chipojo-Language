@@ -286,9 +286,25 @@ void free_value_internals(Value *val)
             free(val->value.func.param[j]);
         }
         free(val->value.func.param);
+        if (val->value.func.closure)
+        {
+            Dict *d = val->value.func.closure;
+            for (int j = 0; j < d->count; j++)
+            {
+                free(d->entries[j].key);
+                if (d->entries[j].value)
+                {
+                    free_value_internals(d->entries[j].value);
+                    free(d->entries[j].value);
+                }
+            }
+            free(d->entries);
+            free(d);
+        }
         // buffer is a borrowed pointer to module input, never freed here
         val->value.func.param = NULL;
         val->value.func.param_count = 0;
+        val->value.func.closure = NULL;
     }
     else if (val->type == VAR_MODULE)
     {
@@ -342,6 +358,7 @@ Value clone_value(Value v)
         // buffer is a borrowed pointer to module input, never owned
         copy.value.func.buffer = v.value.func.buffer;
         copy.value.func.is_block = v.value.func.is_block;
+        copy.value.func.closure = v.value.func.closure ? clone_dict(v.value.func.closure) : NULL;
         break;
 
     case VAR_NATIVE:
@@ -1065,12 +1082,43 @@ Value load_module(char *name, int line)
         mod_dict->count++;
     }
 
+    // Capture closure: all module scope variables (private + exported)
+    Dict *closure_dict = malloc(sizeof(Dict));
+    closure_dict->capacity = mod_scope->count + 4;
+    closure_dict->count = 0;
+    closure_dict->entries = malloc((size_t)closure_dict->capacity * sizeof(DictEntry));
+    for (int i = 0; i < mod_scope->count; i++)
+    {
+        Value *var = mod_scope->vars[i];
+        closure_dict->entries[closure_dict->count].key = strdup(var->name);
+        closure_dict->entries[closure_dict->count].value = malloc(sizeof(Value));
+        *(closure_dict->entries[closure_dict->count].value) = clone_value(*var);
+        closure_dict->count++;
+    }
+
+    // Attach closure to exported function values
+    for (int i = 0; i < mod_dict->count; i++)
+    {
+        set_function_buffers(mod_dict->entries[i].value, input);
+        if (mod_dict->entries[i].value->type == VAR_FUNCTION)
+            mod_dict->entries[i].value->value.func.closure = clone_dict(closure_dict);
+    }
+
+    // Free the temporary closure dict (each function got its own clone)
+    for (int i = 0; i < closure_dict->count; i++)
+    {
+        free(closure_dict->entries[i].key);
+        if (closure_dict->entries[i].value)
+        {
+            free_value_internals(closure_dict->entries[i].value);
+            free(closure_dict->entries[i].value);
+        }
+    }
+    free(closure_dict->entries);
+    free(closure_dict);
+
     // Clean up module scope
     pop_scope();
-
-    // Set module buffer reference on exported functions so function_call can swap input
-    for (int i = 0; i < mod_dict->count; i++)
-        set_function_buffers(mod_dict->entries[i].value, input);
 
     // Keep module buffer alive (functions reference it via start index)
     if (module_buffer_count < MAX_MODULE_BUFFERS)

@@ -75,6 +75,7 @@ typedef struct Value
         int param_count;
         char *buffer;
         int is_block; // 1 for arrow block body, 0 for expression body
+        Dict *closure; // captured module scope for closures
     } func;
 
 

@@ -104,7 +104,7 @@ Token nextToken()
             t.type = TOKEN_ELSE;
         else if (strcmp(t.name, "elif") == 0)
             t.type = TOKEN_ELIF;
-        else if (strcmp(t.name, "while") == 0 || strcmp(t.name, "mientras") == 0)
+        else if (strcmp(t.name, "while") == 0)
             t.type = TOKEN_WHILE;
         else if (strcmp(t.name, "true") == 0)
             t.type = TOKEN_TRUE;
@@ -154,7 +154,7 @@ Token nextToken()
             t.type = TOKEN_CASE;
         else if (strcmp(t.name, "try") == 0)
             t.type = TOKEN_TRY;
-        else if (strcmp(t.name, "catch") == 0 || strcmp(t.name, "cach") == 0)
+        else if (strcmp(t.name, "catch") == 0)
             t.type = TOKEN_CATCH;
         else if (strcmp(t.name, "throw") == 0)
             t.type = TOKEN_THROW;

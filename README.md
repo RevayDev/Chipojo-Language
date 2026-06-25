@@ -1,5 +1,3 @@
-# 🦎 Chipojo Language
-
 <div align="center">
 <img src="assets/icon.svg" alt="Logo Chipojo Language" width="250" />
 </div>
@@ -8,6 +6,7 @@
 
 > [!NOTE]
 > Las condiciones en `if`, `elif`, `while` y `for` **no requieren paréntesis obligatorios**. Ambas formas son válidas:
+>
 > ```chipojo
 > if (x > 5) { ... }  // estilo C
 > if x > 5  { ... }   // también funciona
@@ -27,13 +26,13 @@
 
 - **Condicionales** – `if`, `elif`, `else` con `{ }`
 - **Switch** – `switch` / `case` / `default`
-- **Bucles** – `while`, `for` y el alias `mientras`
+- **Bucles** – `while`, `for`
 - **Funciones** – `func` o `def`, parámetros, retorno, recursión, arrow functions (`=>`)
 - **Clases** – `class` con miembros `public` / `private` y métodos `void`
 - **Listas** – `[v1, v2, v3]` con métodos: `.push()`, `.pop()`, `.size()`, `.get()`, `.insert()`, `.remove()`, `.contains()`, `.find()`, `.reverse()`, `.clear()`, `.is_empty()`
 - **Diccionarios** – `{key: value}` con `.get()`, `.set()`, `.has()`
 - **Propiedades** – `.length` en cadenas, listas y diccionarios
-- **Errores** – `try { ... } catch (err) { ... }` (alias `cach`) y `throw`
+- **Errores** – `try { ... } catch (err) { ... }` y `throw`
 - **Módulos** – `import` / `export`, imports nombrados: `import { hello } from "modulo"`
 
 > [!IMPORTANT]
@@ -44,13 +43,43 @@
 
 ## Compilar
 
+### Linux / macOS
+
 ```bash
 git clone <repo>
 cd Chipojo
 make
 ```
 
-El ejecutable `chipojo` se crea en la raíz.
+El ejecutable `chipojo` se genera en la raíz del proyecto.
+
+> [!TIP]
+> Para usar `chipojo` desde cualquier terminal, agrega la carpeta al `PATH`:
+> ```bash
+> echo 'export PATH=$PATH:'$(pwd) >> ~/.bashrc
+> source ~/.bashrc
+> ```
+
+### Windows
+
+Opción A — **MinGW / MSYS2:**
+
+```bash
+cd Chipojo
+gcc -Ichipojo-interpreter/include chipojo-interpreter/src/*.c -o chipojo.exe
+```
+
+Opción B — **WSL (Windows Subsystem for Linux):**
+
+```bash
+# Instala WSL con Ubuntu, luego:
+cd Chipojo
+make
+./chipojo script.chp
+```
+
+> [!NOTE]
+> El `Makefile` usa `gcc` y está pensado para Linux/WSL. En Windows nativo usa MinGW o compila con WSL.
 
 ## Usar
 
@@ -152,15 +181,34 @@ try {
 
 La extensión **Chipojo Language** (`vscode-extension/`) aporta:
 
-- Resaltado de sintaxis
-- Snippets de código
-- Tema de iconos Sybo
-- Configuración de lenguaje
+- Resaltado de sintaxis (keywords, strings, números, operadores, métodos)
+- Snippets de código (`if`, `while`, `for`, `switch`, `class`, `func`, `try`/`catch`, `import`, arrow functions, etc.)
+- Tema de iconos Sybo (archivos `.chp` con icono personalizado)
+- Configuración de lenguaje (bracket matching, auto-cierre, comentarios)
 
-Instálalo desde el archivo `.vsix` o desde el marketplace de VS Code.
+Instálalo desde el `.vsix` generado en `vscode-extension/` o desde el marketplace de VS Code.
 
-> [!WARNING]
-> Las funciones exportadas actualmente **no capturan variables privadas del módulo** (closures aún no implementados).
+## Módulos y Closures
+
+Chipojo soporta módulos con `import`/`export`. Las funciones exportadas **capturan el ámbito del módulo** (closures), permitiendo acceder a variables privadas del módulo:
+
+```chipojo
+// modulo.chp
+privado = 42
+
+export func obtener() {
+    return privado  // captura 'privado' del módulo
+}
+```
+
+```chipojo
+// main.chp
+import modulo
+show(modulo.obtener())  // 42
+```
+
+> [!TIP]
+> Las funciones flecha (`=>`) también capturan closures cuando se exportan desde un módulo.
 
 ## Tests
 

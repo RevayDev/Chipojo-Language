@@ -1557,6 +1557,17 @@
                 syntax_error_line("Too much params in function", current_token.line);
             }
 
+            // Push closure variables (captured module scope) before params
+            // so params can shadow closure variables if needed
+            if (func_val.value.func.closure)
+            {
+                Dict *cl = func_val.value.func.closure;
+                for (int i = 0; i < cl->count; i++)
+                {
+                    variable_set(cl->entries[i].key, *cl->entries[i].value);
+                }
+            }
+
             for (int x = 0; x < count; x++)
             {
                 variable_set(func_val.value.func.param[x], args_v[x]);
