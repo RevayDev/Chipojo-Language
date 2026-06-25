@@ -1,28 +1,36 @@
 # 🦎 Chipojo Language
 <div align="center">
-<img src="https://github.com/Luifegames/Chipojo-Language/blob/74f78dcaae82aeed552b0b00ab53031f4293c24a/icon.svg" alt="Logo Chipojo Language" width="250" />
+<img src="icon.svg" alt="Logo Chipojo Language" width="250" />
 </div>
 **Chipojo** is a small, C‑based interpreted language designed for learning and experimentation.
 
 ## Features
 
-- **Variables** – integers, float, boolean and strings  
-- **Assignment** – `=`  
-- **Logical Operator** – `and, or, not`  
-- **Compound Assignment** – `= += -= *= /=`  
-- **Arithmetic** – `+ - * / ++ --` and parentheses  
-- **Comparisons** – `== != < > <= >=` (return `1` or `0`)  
-- **Print** – `show(...)` with `+` concatenation (strings, ints, variables)  
-- **Conditionals** – `if`, `elif`, `else` with `{ }` blocks  
-- **Loops** – `while` and the dev alias `mientras`  
-- **List** – [v1,v2,v3]  
-- **Dictionaries** – `{key:value}
-- **Properties** – `.length` for strings, lists and dictionaries
-- **Errors** – `try { ... } catch (err) { ... }` plus `throw`
-- **Functions** – user‑defined with func, parameters, return, and recursion
-- **Packages** – installed chpm packages under `@creator/module` with short imports like `import module from "module"`
+- **Variables** – integers, floats, booleans, strings, lists, dictionaries  
+- **Assignment** – `=`, compound: `+=`, `-=`, `*=`, `/=`, increment/decrement: `++`, `--`  
+- **Logical Operators** – `and`, `or`, `not`  
+- **Arithmetic** – `+`, `-`, `*`, `/` and parentheses  
+- **Comparisons** – `==`, `!=`, `<`, `>`, `<=`, `>=` (return `1` or `0`)  
+- **Print** – `show(...)` with `+` concatenation  
+- **Conditionals** – `if`, `elif`, `else` with `{ }` blocks (parentheses opcionales en la condición)  
+- **Switch** – `switch` / `case` / `default` control flow  
+- **Loops** – `while`, `for`, and the alias `mientras` (parentheses opcionales en la condición)  
+- **Functions** – `func` or `def`, parameters, return values, recursion, arrow functions (`=>`)  
+- **Classes** – `class` with `public` / `private` members and `void` methods  
+- **Lists** – `[v1, v2, v3]` with dynamic methods (`.push()`, `.pop()`, `.size()`, etc.)  
+- **Dictionaries** – `{key: value}` with `.get()`, `.set()`, `.has()`  
+- **Properties** – `.length` for strings, lists and dictionaries  
+- **Error Handling** – `try { ... } catch (err) { ... }` (alias `cach`) plus `throw`  
+- **Modules / Packages** – `import` / `export`, scoped packages (`@creator/module`), named imports: `import { hello } from "module"`  
 - **File extension** – `.chp`  
-- **Version** – `Chipojo -v` shows ASCII art
+- **Version** – `chipojo -v` shows ASCII art
+
+> [!NOTE]
+> Las condiciones en `if`, `elif`, `while` y `for` **no requieren paréntesis obligatorios**. Ambas formas son válidas:
+> ```chipojo
+> if (x > 5) { ... }  // estilo C
+> if x > 5 { ... }    // también funciona
+> ```
 
 ## Building
 
@@ -46,6 +54,10 @@ Show version:
 ```bash
 ./chipojo -v
 ```
+
+> [!IMPORTANT]
+> Los paquetes con alcance (`@creator/module`) permiten imports cortos: `import module from "module"`.  
+> También puedes importar funciones específicas: `import { hello } from "module"`.
 
 ## Packages
 
@@ -396,6 +408,84 @@ while i < 10 {
 }
 ```
 This program prints the first 10 Fibonacci numbers: 0, 1, 1, 2, 3, 5, 8, 13, 21, 34.
+
+> [!TIP]
+> **Nuevo en v0.7.0 (dev):** `switch`, `class`, `void`, `def`, arrow functions, alcances con `@creator`, e imports nombrados. ¡Mira las secciones nuevas abajo!
+
+## Switch
+
+Chipojo supports `switch` / `case` / `default` for multi-branch control flow:
+
+```chipojo
+switch (value) {
+    case 1 {
+        show("one")
+    }
+    case 2 {
+        show("two")
+    }
+    default {
+        show("other")
+    }
+}
+```
+
+## Classes
+
+Define classes with `class`, declare members as `public` or `private`, and methods as `void` or with `func`/`def`:
+
+```chipojo
+class Person {
+    public name
+    public age
+    private id
+
+    void init(name, age) {
+        this.name = name
+        this.age = age
+    }
+
+    func greet() {
+        show("Hello, I'm " + this.name)
+    }
+}
+
+p = Person("Ana", 25)
+p.greet()
+```
+
+## `def` alias
+
+`def` can be used interchangeably with `func`:
+
+```chipojo
+def add(a, b) {
+    return a + b
+}
+```
+
+## Arrow Functions
+
+Compact function syntax with `=>`:
+
+```chipojo
+double = x => x * 2
+add = (a, b) => a + b
+```
+
+## VS Code Extension
+
+Install the **Chipojo Language** extension (v0.3.0+) for:
+
+- Syntax highlighting (keywords, strings, numbers, operators, methods)
+- Code snippets (`if`, `while`, `for`, `switch`, `class`, `func`, `try`/`catch`, `import`, `arrow function`, etc.)
+- File icon for `.chp` files (Sybo icon theme)
+- Language configuration (bracket matching, auto-closing pairs, comment toggling)
+
+Install via the VSIX file in `chipojo-vscode/` or download from the releases page.
+
+> [!WARNING]
+> Las funciones exportadas actualmente **no capturan variables privadas del módulo** (closures/module environments aún no implementados). Los paquetes generados usan metadatos literales hasta que se implementen.
 
 ## License
 MIT – free to use and modify.
