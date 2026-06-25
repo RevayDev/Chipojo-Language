@@ -13,11 +13,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build interpreter
+      - name: Build
         run: make
-
-      - name: Build package manager
-        run: make chpm
 
       - name: Run tests
         run: make test

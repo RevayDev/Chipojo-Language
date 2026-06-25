@@ -1,16 +1,16 @@
 CC = gcc
-CFLAGS = -Wall -Iinclude -g
+CFLAGS = -Wall -Ibackend/include -g
 OBJ_DIR = obj
 BIN = chipojo
 
-SRCS = $(wildcard src/*.c)
-OBJS = $(patsubst src/%.c,$(OBJ_DIR)/%.o,$(SRCS))
+SRCS = $(wildcard backend/src/*.c)
+OBJS = $(patsubst backend/src/%.c,$(OBJ_DIR)/%.o,$(SRCS))
 
 .PHONY: all clean test
 
 all: $(BIN)
 
-$(OBJ_DIR)/%.o: src/%.c | $(OBJ_DIR)
+$(OBJ_DIR)/%.o: backend/src/%.c | $(OBJ_DIR)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(OBJ_DIR):
