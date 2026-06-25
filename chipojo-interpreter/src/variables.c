@@ -913,7 +913,7 @@ Value load_module(char *name, int line)
     {
         // No package.json: search current dir, ./chpm_modules/, then ~/chpm_modules/
         // Try current dir
-        char tmp[512];
+        char tmp[640];
         snprintf(tmp, sizeof(tmp), "%s.chp", module_name);
         FILE *check = fopen(tmp, "rb");
         if (check) { fclose(check); strcpy(filepath, tmp); found = 1; }
@@ -935,7 +935,7 @@ Value load_module(char *name, int line)
                     found = 1;
                 else if (home)
                 {
-                    char global_base[512];
+                    char global_base[640];
                     snprintf(global_base, sizeof(global_base), "%s/chpm_modules", home);
                     if (try_scoped_module_path(global_base, module_name, filepath, sizeof(filepath)))
                         found = 1;
@@ -943,7 +943,7 @@ Value load_module(char *name, int line)
             }
             else if (!found && home)
             {
-                char global_base[512];
+                char global_base[640];
                 snprintf(global_base, sizeof(global_base), "%s/chpm_modules", home);
                 if (try_module_path(global_base, module_name, filepath, sizeof(filepath))) { found = 1; }
             }
@@ -952,7 +952,7 @@ Value load_module(char *name, int line)
 
     if (!found)
     {
-        char msg[256];
+        char msg[640];
         snprintf(msg, sizeof(msg), "Module '%s' not found", module_name);
         syntax_error_line(msg, line);
     }
@@ -967,7 +967,7 @@ Value load_module(char *name, int line)
     FILE *f = fopen(filepath, "rb");
     if (!f)
     {
-        char msg[256];
+        char msg[640];
         snprintf(msg, sizeof(msg), "Module '%s' not found", module_name);
         syntax_error_line(msg, line);
     }
